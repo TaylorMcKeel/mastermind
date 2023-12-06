@@ -5,6 +5,7 @@ import axios from 'axios'
 export class Home extends Component{
   constructor(){
     super()
+
   }
 
   async componentDidMount(){
@@ -12,27 +13,26 @@ export class Home extends Component{
     .then(res=> console.log(`${res} was deleted from the database`))
   }
 
+
   async startNewGame(){
-    const nums = []
-    for(let i=0;i<4;i++){
-      let num = Math.floor(Math.random() * 9)
-      while(nums.includes(num.toString())){
-        num = Math.floor(Math.random() * 9)
-      }
-      nums.push(num.toString())
-    }
+    let nums
+    await axios.get('https://www.random.org/integers/?num=4&min=0&max=7&col=1&base=10&format=plain&rnd=new' )
+      .then(res=> nums = res.data.split('\n'))
+    
+    nums.pop()
     await axios.post('/api/games',{
       "numbers": nums,
       "plays": 0,
       "prevPlays": []
     })
+   
   }
   render(){
    
     return(
       <div>
         <h1>Mastermind</h1>
-        <Link to="/gameplay" onClick={()=>{this.startNewGame()}}>Lets Begin</Link>
+        <Link to="/gameplay" onClick={async () => { await this.startNewGame() }}>Lets Begin</Link>
       </div>
     )
      

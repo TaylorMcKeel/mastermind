@@ -4411,11 +4411,9 @@ var Game = /*#__PURE__*/function (_Component) {
                 _this2.setState({
                   game: res.data
                 });
-                if (res.data[0]['plays'] > 9) {
-                  _this2.setState({
-                    gameOver: 1
-                  });
-                }
+                // if(res.data[0]['plays'] >9){
+                //   this.setState({gameOver: 1})
+                // }
               });
             case 2:
             case "end":
@@ -4449,7 +4447,9 @@ var Game = /*#__PURE__*/function (_Component) {
                   gameOver: 1
                 });
               } else {
-                location.reload();
+                this.setState({
+                  game: this.state.game
+                });
               }
             case 5:
             case "end":
@@ -4587,25 +4587,23 @@ var Home = /*#__PURE__*/function (_Component) {
     key: "startNewGame",
     value: function () {
       var _startNewGame = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-        var nums, i, num;
+        var nums;
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
             case 0:
-              nums = [];
-              for (i = 0; i < 4; i++) {
-                num = Math.floor(Math.random() * 9);
-                while (nums.includes(num.toString())) {
-                  num = Math.floor(Math.random() * 9);
-                }
-                nums.push(num.toString());
-              }
-              _context2.next = 4;
+              _context2.next = 2;
+              return axios__WEBPACK_IMPORTED_MODULE_1__["default"].get('https://www.random.org/integers/?num=4&min=0&max=7&col=1&base=10&format=plain&rnd=new').then(function (res) {
+                return nums = res.data.split('\n');
+              });
+            case 2:
+              nums.pop();
+              _context2.next = 5;
               return axios__WEBPACK_IMPORTED_MODULE_1__["default"].post('/api/games', {
                 "numbers": nums,
                 "plays": 0,
                 "prevPlays": []
               });
-            case 4:
+            case 5:
             case "end":
               return _context2.stop();
           }
@@ -4622,9 +4620,18 @@ var Home = /*#__PURE__*/function (_Component) {
       var _this = this;
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("h1", null, "Mastermind"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_2__.Link, {
         to: "/gameplay",
-        onClick: function onClick() {
-          _this.startNewGame();
-        }
+        onClick: /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+          return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+            while (1) switch (_context3.prev = _context3.next) {
+              case 0:
+                _context3.next = 2;
+                return _this.startNewGame();
+              case 2:
+              case "end":
+                return _context3.stop();
+            }
+          }, _callee3);
+        }))
       }, "Lets Begin"));
     }
   }]);

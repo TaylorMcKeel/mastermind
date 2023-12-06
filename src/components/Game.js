@@ -1,6 +1,9 @@
+
 import React, {Component} from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
+
+
 
 export class Game extends Component{
   constructor(){
@@ -16,22 +19,26 @@ export class Game extends Component{
     await axios.get('/api/games')
       .then(res => {
         this.setState({game: res.data})
-        if(res.data[0]['plays'] >9){
-          this.setState({gameOver: 1})
-        }
+        // if(res.data[0]['plays'] >9){
+        //   this.setState({gameOver: 1})
+        // }
       })
+   
   }
 
   async checkAnswer(){
     this.state.game[0]['prevPlays'].push(this.state.guess)
+
     this.state.game[0]['plays']++
+
     await axios.put(`/api/games/${this.state.game[0]._id}`, this.state.game[0])
+
     if(this.state.guess.join('') === this.state.game[0]['numbers'].join('')){
       this.setState({gameOver: 2})
     } else if(this.state.game[0]['plays'] >9){
       this.setState({gameOver: 1})
     }else{
-      location.reload()
+      this.setState({ game: this.state.game })
     }
   }
 
