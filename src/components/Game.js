@@ -11,7 +11,8 @@ export class Game extends Component{
     this.state={
       game: {},
       guess: [],
-      gameOver: 0
+      gameOver: 0,
+      checkNums: {}
     }
   }
 
@@ -19,9 +20,9 @@ export class Game extends Component{
     await axios.get('/api/games')
       .then(res => {
         this.setState({game: res.data})
-        // if(res.data[0]['plays'] >9){
-        //   this.setState({gameOver: 1})
-        // }
+        if(res.data[0]['plays'] && res.data[0]['plays'] >9){
+          this.setState({gameOver: 1})
+        }
       })
    
   }
@@ -38,10 +39,12 @@ export class Game extends Component{
     } else if(this.state.game[0]['plays'] >9){
       this.setState({gameOver: 1})
     }else{
-      this.setState({ game: this.state.game })
+      this.setState({ game: this.state.game, guess: [] })
+      location.reload()
     }
   }
 
+ 
   render(){
     console.log(this.state)
     if(this.state.gameOver === 1){
@@ -75,12 +78,22 @@ export class Game extends Component{
         </form>
         <ul>
           {game['prevPlays'].toReversed().map((play)=>{
+            const checkNums = this.state.game[0]['numbers'].reduce((acc,curr,idx)=>{
+              if(acc[curr]){
+                acc[curr]++
+              }else{
+                acc[curr] = 1
+              }
+              return acc
+            }, {})
             let numbersRight = 0
             let placesRight = 0
             for(let i=0;i<play.length;i++){
-              if(game['numbers'].includes(play[i])){
+              if(checkNums[play[i]] && checkNums[play[i]] > 0){
                 numbersRight++
-                if(i === game['numbers'].indexOf(play[i])){
+                checkNums[play[i]]--
+                console.log(i, game['numbers'].indexOf(play[i]))
+                if(play[i] === game['numbers'][i]){
                   placesRight++
                 }
               }

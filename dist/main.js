@@ -4394,7 +4394,8 @@ var Game = /*#__PURE__*/function (_Component) {
     _this.state = {
       game: {},
       guess: [],
-      gameOver: 0
+      gameOver: 0,
+      checkNums: {}
     };
     return _this;
   }
@@ -4411,9 +4412,11 @@ var Game = /*#__PURE__*/function (_Component) {
                 _this2.setState({
                   game: res.data
                 });
-                // if(res.data[0]['plays'] >9){
-                //   this.setState({gameOver: 1})
-                // }
+                if (res.data[0]['plays'] && res.data[0]['plays'] > 9) {
+                  _this2.setState({
+                    gameOver: 1
+                  });
+                }
               });
             case 2:
             case "end":
@@ -4448,8 +4451,10 @@ var Game = /*#__PURE__*/function (_Component) {
                 });
               } else {
                 this.setState({
-                  game: this.state.game
+                  game: this.state.game,
+                  guess: []
                 });
+                location.reload();
               }
             case 5:
             case "end":
@@ -4499,12 +4504,22 @@ var Game = /*#__PURE__*/function (_Component) {
             _this3.checkAnswer();
           }
         }, "Submit")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("ul", null, game['prevPlays'].toReversed().map(function (play) {
+          var checkNums = _this3.state.game[0]['numbers'].reduce(function (acc, curr, idx) {
+            if (acc[curr]) {
+              acc[curr]++;
+            } else {
+              acc[curr] = 1;
+            }
+            return acc;
+          }, {});
           var numbersRight = 0;
           var placesRight = 0;
           for (var i = 0; i < play.length; i++) {
-            if (game['numbers'].includes(play[i])) {
+            if (checkNums[play[i]] && checkNums[play[i]] > 0) {
               numbersRight++;
-              if (i === game['numbers'].indexOf(play[i])) {
+              checkNums[play[i]]--;
+              console.log(i, game['numbers'].indexOf(play[i]));
+              if (play[i] === game['numbers'][i]) {
                 placesRight++;
               }
             }
