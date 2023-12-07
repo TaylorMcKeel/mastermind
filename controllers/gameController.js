@@ -18,7 +18,7 @@ const createGame = async(req,res,next)=>{
   try {
     const result = await Game.create(req.body)
     res
-    .status(200)
+    .status(201)
     .setHeader('Content-Type','application/json')
     .json(result)
   } catch (err) {
@@ -43,7 +43,7 @@ const deleteGame = async(req,res,next)=>{
   try {
     const result = await Game.deleteMany()
     res
-    .status(200)
+    .status(204)
     .setHeader('Content-Type','applcation/json')
     .json(result)
   } catch (err) {

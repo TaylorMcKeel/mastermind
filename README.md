@@ -23,6 +23,11 @@ This app was built using React.
 - Run `npm run start-dev` in your terminal.
 - Open your browser to `http://localhost:5001/`
 
+## How to Run Test
+
+- There are a few test, that test the GET, POST, and DELETE requests on the backend.
+- In order to run the tests run `npm test` in your console.
+
 ## Thought Process
 
 ## Code Structure
