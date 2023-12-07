@@ -46,7 +46,6 @@ const Game = () => {
       }
       if (guess.join("") === updatedGame['numbers'].join("")) {
         setGameOverCount(2);
-        console.log(gameOver)
       } else if (updatedGame['plays'] > 9) {
         setGameOverCount(1);
       } else {
@@ -112,10 +111,10 @@ const Game = () => {
         checkNums
       );
       return (
-        <div key={play.join("")}>
-          <p>{play}</p>
-          <p>Numbers Correct: {numbersRight}</p>
-          <p>Places Correct: {placesRight}</p>
+        <div class='play' key={play.join("")}>
+          <p class='playDetail'>{play}</p>
+          <p class='playDetail'>Numbers Correct: {numbersRight}</p>
+          <p class='playDetail'>Places Correct: {placesRight}</p>
         </div>
       );
     });
@@ -125,19 +124,19 @@ const Game = () => {
     <>
       {error}
       {gameOverCount === 1 && (
-        <div>
+        <div class='textAndButton'>
           <h1>Game Over</h1>
           <Link to="/">Play Again</Link>
         </div>
       )}
       {gameOverCount === 2 && (
-        <div>
+        <div class="animated-background">
           <h1>YOU WIN</h1>
           <Link to="/">Play Again</Link>
         </div>
       )}
       {gameOverCount === 0 && game[0] && (
-        <div>
+        <div id='gamePlay'>
           <p>You have {count} turns remaining</p>
           <form>
             <input
@@ -158,7 +157,7 @@ const Game = () => {
             </button>
           </form>
 
-          <ul>{previousGames()}</ul>
+          <ul id='prevPlays'>{previousGames()}</ul>
         </div>
       )}
     </>

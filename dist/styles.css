@@ -1,0 +1,70 @@
+.textAndButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 500px;
+}
+
+#gamePlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#prevPlays{
+  flex-wrap: wrap;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.play{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5px;
+  border: solid;
+  margin:10px;
+  background-color: lightsteelblue;
+}
+
+.playDetail{
+  margin: 5px;
+}
+
+#root{
+  background-color: darkgray;
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+  background-color: darkgray
+}
+
+.animated-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1; /* Place the background behind other elements */
+  background: linear-gradient(45deg, #3498db, #e74c3c); /* Gradient background */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 500px;
+  animation: animateBackground 10s linear infinite; /* Animation properties */
+}
+
+@keyframes animateBackground {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}

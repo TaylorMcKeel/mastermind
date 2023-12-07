@@ -66,7 +66,7 @@ const Home = () => {
   };
 
   return (
-    <div id='homeDiv'>
+    <div class='textAndButton'>
       <h1 >Mastermind</h1>
       <button onClick={onLetsBeginClicked}>Let's Begin</button>
     </div>
