@@ -1,116 +1,164 @@
+import React, { Component, useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import axios from "axios";
 
-import React, {Component} from 'react'
-import { Link } from 'react-router-dom'
-import axios from 'axios'
+// Fix try and catch
+// Fix game[0]
+// Check what happens when you do 0222
+// Game over cunt
+const Game = () => {
+  const [game, setGame] = useState({});
+  const [guess, setGuess] = useState([]);
+  const [gameOverCount, setGameOverCount] = useState(0);
+  const [error, setError] = useState("");
 
+  const count = game[0] ? 10 - game[0]["plays"] : 10;
 
+  useEffect(() => {
+    const getInitialGame = async () => {
+      try {
+        await axios.get("/api/games").then((res) => {
+          console.log(res);
+          setGame(res.data);
+          if (count === 0) {
+            setGameOverCount(1);
+          }
+        });
+      } catch (error) {
+        console.log(error)
+      }
+    };
+    getInitialGame();
+  }, []);
 
-export class Game extends Component{
-  constructor(){
-    super()
-    this.state={
-      game: {},
-      guess: [],
-      gameOver: 0,
-      checkNums: {}
+  const checkAnswer = async () => {
+    if (guess.length === 4) {
+      setError("");
+      let updatedGame = { ...game[0] };
+      updatedGame.prevPlays.push(guess);
+      updatedGame.plays++;
+      try {
+        await axios.put(`/api/games/${updatedGame._id}`, updatedGame);
+      } catch(err) {
+        console.log(err)
+        setError("App Error - Please try again.");
+      }
+      if (guess.join("") === updatedGame['numbers'].join("")) {
+        setGameOverCount(2);
+        console.log(gameOver)
+      } else if (updatedGame['plays'] > 9) {
+        setGameOverCount(1);
+      } else {
+        setGame({ ...game, [0]: updatedGame });
+        setGuess([]);
+      }
+    } else {
+      setError("Must have 4 digits");
     }
-  }
+  };
 
-  async componentDidMount(){
-    await axios.get('/api/games')
-      .then(res => {
-        this.setState({game: res.data})
-        if(res.data[0]['plays'] && res.data[0]['plays'] >9){
-          this.setState({gameOver: 1})
+  const handleGuessChange = (ev) => {
+    const newGuess = ev.target.value;
+    if (newGuess.length > 4 || isNaN(newGuess) ) {
+      return;
+    }
+    for(let i=0;i<newGuess.length;i++){
+      if(newGuess[i] > 7){
+        return
+      }
+    }
+
+    setGuess(newGuess.split(""));
+  };
+
+  const countNumbers = (game) => {
+    return game["numbers"].reduce((acc, curr) => {
+      if (acc[curr]) {
+        acc[curr]++;
+      } else {
+        acc[curr] = 1;
+      }
+      return acc;
+    }, {});
+  };
+
+  // Function to calculate scores
+  const calculateScores = (play, game, checkNums) => {
+    let numbersRight = 0;
+    let placesRight = 0;
+    for (let i = 0; i < play.length; i++) {
+      if (checkNums[play[i]] && checkNums[play[i]] > 0) {
+        numbersRight++;
+        checkNums[play[i]]--;
+        if (play[i] === game["numbers"][i]) {
+          placesRight++;
         }
-      })
-   
-  }
-
-  async checkAnswer(){
-    this.state.game[0]['prevPlays'].push(this.state.guess)
-
-    this.state.game[0]['plays']++
-
-    await axios.put(`/api/games/${this.state.game[0]._id}`, this.state.game[0])
-
-    if(this.state.guess.join('') === this.state.game[0]['numbers'].join('')){
-      this.setState({gameOver: 2})
-    } else if(this.state.game[0]['plays'] >9){
-      this.setState({gameOver: 1})
-    }else{
-      this.setState({ game: this.state.game, guess: [] })
-      location.reload()
+      }
     }
-  }
+    return { numbersRight, placesRight };
+  };
 
- 
-  render(){
-    console.log(this.state)
-    if(this.state.gameOver === 1){
-      return(
+  const previousGames = () => {
+    const prevPlays = game[0]["prevPlays"];
+    return prevPlays.toReversed().map((play) => {
+      const checkNums = countNumbers(game[0]);
+      const { numbersRight, placesRight } = calculateScores(
+        play,
+        game[0],
+        checkNums
+      );
+      return (
+        <div key={play.join("")}>
+          <p>{play}</p>
+          <p>Numbers Correct: {numbersRight}</p>
+          <p>Places Correct: {placesRight}</p>
+        </div>
+      );
+    });
+  };
+
+  return (
+    <>
+      {error}
+      {gameOverCount === 1 && (
         <div>
           <h1>Game Over</h1>
-          <Link to='/'>Play Again</Link>
+          <Link to="/">Play Again</Link>
         </div>
-      )
-    }
-    if(this.state.gameOver === 2){
-      return(
+      )}
+      {gameOverCount === 2 && (
         <div>
           <h1>YOU WIN</h1>
-          <Link to='/'>Play Again</Link>
+          <Link to="/">Play Again</Link>
         </div>
-      )
-    }
-    if(this.state.game[0] && this.state.gameOver === 0){
-      const game = this.state.game[0]
-      let count = 10 - game['plays']
-      return (
-       <div>
-        <p>You have {count} turns remaining</p>
-        <form>
-          <input  type="text" id='guess' name='guess' onChange={(ev)=>{
-            const guess = ev.target.value.split('')
-            guess.map((curr)=>{Number(curr)})
-            this.setState({guess: guess})}}/>
-          <button type="button" onClick={()=>{this.checkAnswer()}}>Submit</button>
-        </form>
-        <ul>
-          {game['prevPlays'].toReversed().map((play)=>{
-            const checkNums = this.state.game[0]['numbers'].reduce((acc,curr,idx)=>{
-              if(acc[curr]){
-                acc[curr]++
-              }else{
-                acc[curr] = 1
-              }
-              return acc
-            }, {})
-            let numbersRight = 0
-            let placesRight = 0
-            for(let i=0;i<play.length;i++){
-              if(checkNums[play[i]] && checkNums[play[i]] > 0){
-                numbersRight++
-                checkNums[play[i]]--
-                console.log(i, game['numbers'].indexOf(play[i]))
-                if(play[i] === game['numbers'][i]){
-                  placesRight++
-                }
-              }
-            }
-            return(
-              <div>
-                <p>{play}</p>
-                <p>Numbers Correct: {numbersRight}</p>
-                <p>Places Correct: {placesRight}</p>
-              </div>
-            )
-          })}
-        </ul>
-       </div>
-      )
-    }
-  }
-}
+      )}
+      {gameOverCount === 0 && game[0] && (
+        <div>
+          <p>You have {count} turns remaining</p>
+          <form>
+            <input
+              type="text"
+              id="guess"
+              value={guess.join("")}
+              name="guess"
+              onChange={handleGuessChange}
+            />
+            <button
+              type="button"
+              onClick={(event) => {
+                event.preventDefault();
+                checkAnswer();
+              }}
+            >
+              Submit
+            </button>
+          </form>
 
-export default (Game)
+          <ul>{previousGames()}</ul>
+        </div>
+      )}
+    </>
+  );
+};
+
+export default Game;
