@@ -4383,10 +4383,8 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 
 
-// Fix try and catch
 // Fix game[0]
-// Check what happens when you do 0222
-// Game over cunt
+
 var Game = function Game() {
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({}),
     _useState2 = _slicedToArray(_useState, 2),
@@ -4405,6 +4403,8 @@ var Game = function Game() {
     error = _useState8[0],
     setError = _useState8[1];
   var count = game[0] ? 10 - game[0]["plays"] : 10;
+
+  //grabs data from backend.
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     var getInitialGame = /*#__PURE__*/function () {
       var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
@@ -4414,7 +4414,7 @@ var Game = function Game() {
               _context.prev = 0;
               _context.next = 3;
               return axios__WEBPACK_IMPORTED_MODULE_1__["default"].get("/api/games").then(function (res) {
-                console.log(res);
+                console.log(res.data[0]);
                 setGame(res.data);
                 if (count === 0) {
                   setGameOverCount(1);
@@ -4439,6 +4439,8 @@ var Game = function Game() {
     }();
     getInitialGame();
   }, []);
+
+  //checks users answer, and if they are out of turns
   var checkAnswer = /*#__PURE__*/function () {
     var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
       var updatedGame;
@@ -4488,6 +4490,8 @@ var Game = function Game() {
       return _ref2.apply(this, arguments);
     };
   }();
+
+  //makes sure user can only choose 4 numbers between 0-7
   var handleGuessChange = function handleGuessChange(ev) {
     var newGuess = ev.target.value;
     if (newGuess.length > 4 || isNaN(newGuess)) {
@@ -4500,6 +4504,8 @@ var Game = function Game() {
     }
     setGuess(newGuess.split(""));
   };
+
+  //creates a hashmap of the winning numbers
   var countNumbers = function countNumbers(game) {
     return game["numbers"].reduce(function (acc, curr) {
       if (acc[curr]) {
@@ -4511,7 +4517,7 @@ var Game = function Game() {
     }, {});
   };
 
-  // Function to calculate scores
+  // Function to numbers right and places correct
   var calculateScores = function calculateScores(play, game, checkNums) {
     var numbersRight = 0;
     var placesRight = 0;
@@ -4529,6 +4535,8 @@ var Game = function Game() {
       placesRight: placesRight
     };
   };
+
+  //generates previous plays
   var previousGames = function previousGames() {
     var prevPlays = game[0]["prevPlays"];
     return prevPlays.toReversed().map(function (play) {
@@ -4586,6 +4594,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 var Home = function Home() {
   var navigate = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_1__.useNavigate)();
+
+  //since only one game runs at a time, when this component mounts all games are deleted.
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     var deleteGames = /*#__PURE__*/function () {
       var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
@@ -4616,6 +4626,8 @@ var Home = function Home() {
     }();
     deleteGames();
   }, []);
+
+  //this function gets 4 random numbers from the api, and sends the new game to the database.
   var startNewGame = /*#__PURE__*/function () {
     var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
       var nums;
@@ -4670,6 +4682,8 @@ var Home = function Home() {
       return _ref2.apply(this, arguments);
     };
   }();
+
+  //this funtion allows us to wait until a new game is created to navigate to the next component
   var onLetsBeginClicked = /*#__PURE__*/function () {
     var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
       return _regeneratorRuntime().wrap(function _callee3$(_context3) {
@@ -4697,7 +4711,9 @@ var Home = function Home() {
       return _ref3.apply(this, arguments);
     };
   }();
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("h1", null, "Mastermind"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", {
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    id: "homeDiv"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("h1", null, "Mastermind"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", {
     onClick: onLetsBeginClicked
   }, "Let's Begin"));
 };

@@ -1,11 +1,10 @@
-import React, { Component, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
-// Fix try and catch
 // Fix game[0]
-// Check what happens when you do 0222
-// Game over cunt
+
+
 const Game = () => {
   const [game, setGame] = useState({});
   const [guess, setGuess] = useState([]);
@@ -14,11 +13,12 @@ const Game = () => {
 
   const count = game[0] ? 10 - game[0]["plays"] : 10;
 
+  //grabs data from backend.
   useEffect(() => {
     const getInitialGame = async () => {
       try {
         await axios.get("/api/games").then((res) => {
-          console.log(res);
+          console.log(res.data[0]);
           setGame(res.data);
           if (count === 0) {
             setGameOverCount(1);
@@ -31,6 +31,7 @@ const Game = () => {
     getInitialGame();
   }, []);
 
+  //checks users answer, and if they are out of turns
   const checkAnswer = async () => {
     if (guess.length === 4) {
       setError("");
@@ -57,6 +58,7 @@ const Game = () => {
     }
   };
 
+  //makes sure user can only choose 4 numbers between 0-7
   const handleGuessChange = (ev) => {
     const newGuess = ev.target.value;
     if (newGuess.length > 4 || isNaN(newGuess) ) {
@@ -71,6 +73,7 @@ const Game = () => {
     setGuess(newGuess.split(""));
   };
 
+  //creates a hashmap of the winning numbers
   const countNumbers = (game) => {
     return game["numbers"].reduce((acc, curr) => {
       if (acc[curr]) {
@@ -82,7 +85,7 @@ const Game = () => {
     }, {});
   };
 
-  // Function to calculate scores
+  // Function to numbers right and places correct
   const calculateScores = (play, game, checkNums) => {
     let numbersRight = 0;
     let placesRight = 0;
@@ -98,6 +101,7 @@ const Game = () => {
     return { numbersRight, placesRight };
   };
 
+//generates previous plays
   const previousGames = () => {
     const prevPlays = game[0]["prevPlays"];
     return prevPlays.toReversed().map((play) => {

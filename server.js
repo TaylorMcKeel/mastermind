@@ -38,4 +38,4 @@ process.on('unhandledRejection', (err, promise)=>{
   server.close(()=> process.exit(1))
 })
 
-export default app
+module.exports = app

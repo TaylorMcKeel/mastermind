@@ -28,6 +28,29 @@ This app was built using React.
 - There are a few test, that test the GET, POST, and DELETE requests on the backend.
 - In order to run the tests run `npm test` in your console.
 
-## Thought Process
-
 ## Code Structure
+
+### Backend
+
+- To build this game I decided to use a non-relational database since the only data being stored was in relation to one game (the numbers, number of plays, and previous plays.) I designed my model using mongoose with MongoDB containing those three aspects.
+
+- I decided that since only one game was running at a time that it was necessary to have 4 routes.
+
+  - A GET all route since there would only be one game at a time.
+  - A POST route to create a new game.
+  - A PUT route to update the new game with each play.
+  - A DELETE all route that cleared all games when a new one began.
+
+- I used an express server to handle all of my backend routes.
+
+### Frontend
+
+- For the front end of my application I decided to use React components.
+
+- There are two main components in my application:
+
+  - The Home component is where the game begins. Since the game begins here when it is rendered all games are deleted from the database, and when you click the begin button, a new game is created and posted to the database.
+
+  - The Game component is where all of the gameplay takes place.This is where the user will enter each play, and it will compare their answer with thwe answer from the database, and update the database with all of their attempts so that they can be displayed as the user naviagtes through the game.
+
+- I use axios to make the API call to retrieve the random numbers, as well as to make GET, POST, PUT, nad DELETE requests to the database.
