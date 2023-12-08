@@ -4,7 +4,7 @@ import axios from "axios";
 
 const Home = () => {
   const navigate = useNavigate();
-
+  const [difficultyLevel, setDifficultyLevel] = useState(4)
 
 //since only one game runs at a time, when this component mounts all games are deleted.
   useEffect(() => {
@@ -31,7 +31,7 @@ const Home = () => {
           "https://www.random.org/integers/",
           {
             params: {
-              'num': 4,
+              'num': difficultyLevel,
               'min': 0,
               'max': 7,
               'col': 1,
@@ -44,12 +44,14 @@ const Home = () => {
         .then((res) => {
           randomNumbers = res.data.split("\n")
           randomNumbers.pop()
+          console.log(randomNumbers)
         });
 
       await axios.post("/api/games", {
         numbers: randomNumbers,
         plays: 0,
         prevPlays: [],
+        difficulty: difficultyLevel
       });
 
     } catch (err) {
@@ -57,6 +59,11 @@ const Home = () => {
     }
     
   };
+
+  //changes difficulty lvel based on user input
+  const handleDifficultyChange =(ev)=>{
+    setDifficultyLevel(Number(ev.target.value))
+  }
 
 //this funtion allows us to wait until a new game is created to navigate to the next component
   const onLetsBeginClicked = async () => {
@@ -71,6 +78,12 @@ const Home = () => {
   return (
     <div className='textAndButton'>
       <h1 >Mastermind</h1>
+      <label htmlFor='difficulty'>Choose a Difficulty:</label>
+      <select name='difficulty' id='difficulty' onChange={handleDifficultyChange}>
+        <option value='4'>Easy: 4 Numbers</option>
+        <option value='5'>Medium: 5 Numbers</option>
+        <option value='6'>Hard: 6 Numbers</option>
+      </select>
       <button onClick={onLetsBeginClicked}>Let's Begin</button>
     </div>
   );

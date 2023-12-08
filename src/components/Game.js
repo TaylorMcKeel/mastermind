@@ -32,8 +32,9 @@ const Game = () => {
   //makes sure user can only choose 4 numbers between 0-7
   const handleGuessChange = (ev) => {
     const newGuess = ev.target.value;
-    if (newGuess.length > 4 || isNaN(newGuess) ) {
-      setError('Guess must be 4 numbers')
+    console.log(game)
+    if (newGuess.length > game[0]['difficulty'] || isNaN(newGuess) ) {
+      setError(`Guess must be ${game[0]['difficulty']} numbers`)
       return;
     }
     for(let i=0;i<newGuess.length;i++){
@@ -48,7 +49,7 @@ const Game = () => {
 
   //checks users answer, and if they are out of turns
   const checkAnswer = async () => {
-    if (guess.length === 4) {
+    if (guess.length === game[0]['difficulty']) {
       setError("");
       let updatedGame = { ...game[0] };
       updatedGame.prevPlays.push(guess);
@@ -67,7 +68,7 @@ const Game = () => {
         setGuess([]);
       }
     } else {
-      setError("Must have 4 digits");
+      setError(`Must have ${game[0]['difficulty']} digits`);
     }
   };
 

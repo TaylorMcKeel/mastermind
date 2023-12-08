@@ -15,6 +15,10 @@ const GameSchema = new Schema({
   prevPlays:{
     type: Array,
     required: true
+  },
+  difficulty:{
+    type: Number,
+    required: true
   }
 },{
   timestamps: true
