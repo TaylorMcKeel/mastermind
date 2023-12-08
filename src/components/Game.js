@@ -19,7 +19,6 @@ const Game = () => {
       try {
         await axios.get("/api/games")
           .then((res) => {
-            console.log(res.data[0]);
             setGame(res.data);
         });
       } catch (error) {
