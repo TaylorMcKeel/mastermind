@@ -32,7 +32,6 @@ const Game = () => {
   //makes sure user can only choose 4 numbers between 0-7
   const handleGuessChange = (ev) => {
     const newGuess = ev.target.value;
-    console.log(game)
     if (newGuess.length > game[0]['difficulty'] || isNaN(newGuess) ) {
       setError(`Guess must be ${game[0]['difficulty']} numbers`)
       return;

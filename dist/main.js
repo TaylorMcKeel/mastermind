@@ -4441,7 +4441,6 @@ var Game = function Game() {
   //makes sure user can only choose 4 numbers between 0-7
   var handleGuessChange = function handleGuessChange(ev) {
     var newGuess = ev.target.value;
-    console.log(game);
     if (newGuess.length > game[0]['difficulty'] || isNaN(newGuess)) {
       setError("Guess must be ".concat(game[0]['difficulty'], " numbers"));
       return;
@@ -4733,7 +4732,6 @@ var Home = function Home() {
             }).then(function (res) {
               randomNumbers = res.data.split("\n");
               randomNumbers.pop();
-              console.log(randomNumbers);
             });
           case 3:
             _context2.next = 5;
@@ -4796,11 +4794,12 @@ var Home = function Home() {
   }();
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
     className: "textAndButton"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("h1", null, "Mastermind"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("h1", null, "Mastermind"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    id: "difficulty"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
     htmlFor: "difficulty"
   }, "Choose a Difficulty:"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("select", {
     name: "difficulty",
-    id: "difficulty",
     onChange: handleDifficultyChange
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("option", {
     value: "4"
@@ -4808,7 +4807,7 @@ var Home = function Home() {
     value: "5"
   }, "Medium: 5 Numbers"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("option", {
     value: "6"
-  }, "Hard: 6 Numbers")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", {
+  }, "Hard: 6 Numbers"))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", {
     onClick: onLetsBeginClicked
   }, "Let's Begin"));
 };

@@ -44,7 +44,6 @@ const Home = () => {
         .then((res) => {
           randomNumbers = res.data.split("\n")
           randomNumbers.pop()
-          console.log(randomNumbers)
         });
 
       await axios.post("/api/games", {
@@ -78,12 +77,14 @@ const Home = () => {
   return (
     <div className='textAndButton'>
       <h1 >Mastermind</h1>
-      <label htmlFor='difficulty'>Choose a Difficulty:</label>
-      <select name='difficulty' id='difficulty' onChange={handleDifficultyChange}>
-        <option value='4'>Easy: 4 Numbers</option>
-        <option value='5'>Medium: 5 Numbers</option>
-        <option value='6'>Hard: 6 Numbers</option>
-      </select>
+      <div id='difficulty'>
+        <label htmlFor='difficulty'>Choose a Difficulty:</label>
+        <select name='difficulty'  onChange={handleDifficultyChange}>
+          <option value='4'>Easy: 4 Numbers</option>
+          <option value='5'>Medium: 5 Numbers</option>
+          <option value='6'>Hard: 6 Numbers</option>
+        </select>
+      </div>
       <button onClick={onLetsBeginClicked}>Let's Begin</button>
     </div>
   );
