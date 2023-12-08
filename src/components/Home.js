@@ -1,9 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Home = () => {
   const navigate = useNavigate();
+
 
 //since only one game runs at a time, when this component mounts all games are deleted.
   useEffect(() => {
@@ -19,10 +20,11 @@ const Home = () => {
 
     deleteGames();
   }, []);
+  
 
   //this function gets 4 random numbers from the api, and sends the new game to the database.
   const startNewGame = async () => {
-    let nums
+    let randomNumbers
     try {
       await axios
         .get(
@@ -39,20 +41,21 @@ const Home = () => {
             }
           }
         )
-        .then((res) => {nums = res.data.split("\n")});
-    } catch (err) {
-      console.log(err)
-    }
-    nums.pop();
-    try {
+        .then((res) => {
+          randomNumbers = res.data.split("\n")
+          randomNumbers.pop()
+        });
+
       await axios.post("/api/games", {
-        numbers: nums,
+        numbers: randomNumbers,
         plays: 0,
         prevPlays: [],
       });
+
     } catch (err) {
       console.log(err)
     }
+    
   };
 
 //this funtion allows us to wait until a new game is created to navigate to the next component
@@ -66,7 +69,7 @@ const Home = () => {
   };
 
   return (
-    <div class='textAndButton'>
+    <div className='textAndButton'>
       <h1 >Mastermind</h1>
       <button onClick={onLetsBeginClicked}>Let's Begin</button>
     </div>

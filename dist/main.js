@@ -4362,8 +4362,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/dist/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
 function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
@@ -4383,7 +4383,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 
 
-// Fix game[0]
+//put functions in chronological order
 
 var Game = function Game() {
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({}),
@@ -4402,6 +4402,7 @@ var Game = function Game() {
     _useState8 = _slicedToArray(_useState7, 2),
     error = _useState8[0],
     setError = _useState8[1];
+  var navigate = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_1__.useNavigate)();
   var count = game[0] ? 10 - game[0]["plays"] : 10;
 
   //grabs data from backend.
@@ -4413,12 +4414,9 @@ var Game = function Game() {
             case 0:
               _context.prev = 0;
               _context.next = 3;
-              return axios__WEBPACK_IMPORTED_MODULE_1__["default"].get("/api/games").then(function (res) {
+              return axios__WEBPACK_IMPORTED_MODULE_2__["default"].get("/api/games").then(function (res) {
                 console.log(res.data[0]);
                 setGame(res.data);
-                if (count === 0) {
-                  setGameOverCount(1);
-                }
               });
             case 3:
               _context.next = 8;
@@ -4440,6 +4438,22 @@ var Game = function Game() {
     getInitialGame();
   }, []);
 
+  //makes sure user can only choose 4 numbers between 0-7
+  var handleGuessChange = function handleGuessChange(ev) {
+    var newGuess = ev.target.value;
+    if (newGuess.length > 4 || isNaN(newGuess)) {
+      setError('Guess must be 4 numbers');
+      return;
+    }
+    for (var i = 0; i < newGuess.length; i++) {
+      if (newGuess[i] > 7) {
+        setError('Number must be between 0-7');
+        return;
+      }
+    }
+    setGuess(newGuess.split(""));
+  };
+
   //checks users answer, and if they are out of turns
   var checkAnswer = /*#__PURE__*/function () {
     var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
@@ -4448,7 +4462,7 @@ var Game = function Game() {
         while (1) switch (_context2.prev = _context2.next) {
           case 0:
             if (!(guess.length === 4)) {
-              _context2.next = 17;
+              _context2.next = 16;
               break;
             }
             setError("");
@@ -4457,16 +4471,15 @@ var Game = function Game() {
             updatedGame.plays++;
             _context2.prev = 5;
             _context2.next = 8;
-            return axios__WEBPACK_IMPORTED_MODULE_1__["default"].put("/api/games/".concat(updatedGame._id), updatedGame);
+            return axios__WEBPACK_IMPORTED_MODULE_2__["default"].put("/api/games/".concat(updatedGame._id), updatedGame);
           case 8:
-            _context2.next = 14;
+            _context2.next = 13;
             break;
           case 10:
             _context2.prev = 10;
             _context2.t0 = _context2["catch"](5);
             console.log(_context2.t0);
-            setError("App Error - Please try again.");
-          case 14:
+          case 13:
             if (guess.join("") === updatedGame['numbers'].join("")) {
               setGameOverCount(2);
             } else if (updatedGame['plays'] > 9) {
@@ -4475,11 +4488,11 @@ var Game = function Game() {
               setGame(_objectSpread(_objectSpread({}, game), {}, _defineProperty({}, 0, updatedGame)));
               setGuess([]);
             }
-            _context2.next = 18;
+            _context2.next = 17;
             break;
-          case 17:
+          case 16:
             setError("Must have 4 digits");
-          case 18:
+          case 17:
           case "end":
             return _context2.stop();
         }
@@ -4490,18 +4503,25 @@ var Game = function Game() {
     };
   }();
 
-  //makes sure user can only choose 4 numbers between 0-7
-  var handleGuessChange = function handleGuessChange(ev) {
-    var newGuess = ev.target.value;
-    if (newGuess.length > 4 || isNaN(newGuess)) {
-      return;
-    }
-    for (var i = 0; i < newGuess.length; i++) {
-      if (newGuess[i] > 7) {
-        return;
-      }
-    }
-    setGuess(newGuess.split(""));
+  //displays previous guesses made by user
+  var displayPreviousGuesses = function displayPreviousGuesses() {
+    var prevPlays = game[0]["prevPlays"];
+    return prevPlays.toReversed().map(function (play) {
+      var checkNums = countNumbers(game[0]);
+      var _calculateScores = calculateScores(play, game[0], checkNums),
+        numbersRight = _calculateScores.numbersRight,
+        placesRight = _calculateScores.placesRight;
+      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+        className: "play",
+        key: play.join("")
+      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("p", {
+        className: "playDetail"
+      }, play), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("p", {
+        className: "playDetail"
+      }, "Numbers Correct: ", numbersRight), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("p", {
+        className: "playDetail"
+      }, "Places Correct: ", placesRight));
+    });
   };
 
   //creates a hashmap of the winning numbers
@@ -4516,7 +4536,7 @@ var Game = function Game() {
     }, {});
   };
 
-  // Function to numbers right and places correct
+  // Function to calculate numbers right and places correct
   var calculateScores = function calculateScores(play, game, checkNums) {
     var numbersRight = 0;
     var placesRight = 0;
@@ -4535,34 +4555,71 @@ var Game = function Game() {
     };
   };
 
-  //generates previous plays
-  var previousGames = function previousGames() {
-    var prevPlays = game[0]["prevPlays"];
-    return prevPlays.toReversed().map(function (play) {
-      var checkNums = countNumbers(game[0]);
-      var _calculateScores = calculateScores(play, game[0], checkNums),
-        numbersRight = _calculateScores.numbersRight,
-        placesRight = _calculateScores.placesRight;
-      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
-        "class": "play",
-        key: play.join("")
-      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("p", {
-        "class": "playDetail"
-      }, play), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("p", {
-        "class": "playDetail"
-      }, "Numbers Correct: ", numbersRight), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("p", {
-        "class": "playDetail"
-      }, "Places Correct: ", placesRight));
-    });
-  };
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, error, gameOverCount === 1 && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
-    "class": "textAndButton"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("h1", null, "Game Over"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_2__.Link, {
-    to: "/"
+  //deletes current game once game is over.
+  var deleteCurrentGame = /*#__PURE__*/function () {
+    var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+      return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+        while (1) switch (_context3.prev = _context3.next) {
+          case 0:
+            _context3.prev = 0;
+            _context3.next = 3;
+            return axios__WEBPACK_IMPORTED_MODULE_2__["default"]["delete"]("/api/games").then(function (res) {
+              return console.log("".concat(res, " was deleted from the database"));
+            });
+          case 3:
+            _context3.next = 8;
+            break;
+          case 5:
+            _context3.prev = 5;
+            _context3.t0 = _context3["catch"](0);
+            console.log(_context3.t0);
+          case 8:
+          case "end":
+            return _context3.stop();
+        }
+      }, _callee3, null, [[0, 5]]);
+    }));
+    return function deleteCurrentGame() {
+      return _ref3.apply(this, arguments);
+    };
+  }();
+
+  //takes user back to the home page to start another game
+  var navigateHome = /*#__PURE__*/function () {
+    var _ref4 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
+      return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+        while (1) switch (_context4.prev = _context4.next) {
+          case 0:
+            _context4.prev = 0;
+            _context4.next = 3;
+            return deleteCurrentGame();
+          case 3:
+            _context4.next = 8;
+            break;
+          case 5:
+            _context4.prev = 5;
+            _context4.t0 = _context4["catch"](0);
+            console.log(_context4.t0);
+          case 8:
+            navigate('/');
+          case 9:
+          case "end":
+            return _context4.stop();
+        }
+      }, _callee4, null, [[0, 5]]);
+    }));
+    return function navigateHome() {
+      return _ref4.apply(this, arguments);
+    };
+  }();
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, gameOverCount === 1 && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "textAndButton"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("h1", null, "Game Over"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", {
+    onClick: navigateHome
   }, "Play Again")), gameOverCount === 2 && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
-    "class": "animated-background"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("h1", null, "YOU WIN"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_2__.Link, {
-    to: "/"
+    className: "animated-background"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("h1", null, "YOU WIN"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", {
+    onClick: navigateHome
   }, "Play Again")), gameOverCount === 0 && game[0] && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
     id: "gamePlay"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("p", null, "You have ", count, " turns remaining"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("form", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
@@ -4571,7 +4628,9 @@ var Game = function Game() {
     value: guess.join(""),
     name: "guess",
     onChange: handleGuessChange
-  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", {
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("p", {
+    id: "error"
+  }, error), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", {
     type: "button",
     onClick: function onClick(event) {
       event.preventDefault();
@@ -4579,7 +4638,7 @@ var Game = function Game() {
     }
   }, "Submit")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("ul", {
     id: "prevPlays"
-  }, previousGames())));
+  }, displayPreviousGuesses())));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Game);
 
@@ -4644,7 +4703,7 @@ var Home = function Home() {
   //this function gets 4 random numbers from the api, and sends the new game to the database.
   var startNewGame = /*#__PURE__*/function () {
     var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-      var nums;
+      var randomNumbers;
       return _regeneratorRuntime().wrap(function _callee2$(_context2) {
         while (1) switch (_context2.prev = _context2.next) {
           case 0:
@@ -4661,36 +4720,28 @@ var Home = function Home() {
                 'rnd': 'new'
               }
             }).then(function (res) {
-              nums = res.data.split("\n");
+              randomNumbers = res.data.split("\n");
+              randomNumbers.pop();
             });
           case 3:
-            _context2.next = 8;
-            break;
-          case 5:
-            _context2.prev = 5;
-            _context2.t0 = _context2["catch"](0);
-            console.log(_context2.t0);
-          case 8:
-            nums.pop();
-            _context2.prev = 9;
-            _context2.next = 12;
+            _context2.next = 5;
             return axios__WEBPACK_IMPORTED_MODULE_2__["default"].post("/api/games", {
-              numbers: nums,
+              numbers: randomNumbers,
               plays: 0,
               prevPlays: []
             });
-          case 12:
-            _context2.next = 17;
+          case 5:
+            _context2.next = 10;
             break;
-          case 14:
-            _context2.prev = 14;
-            _context2.t1 = _context2["catch"](9);
-            console.log(_context2.t1);
-          case 17:
+          case 7:
+            _context2.prev = 7;
+            _context2.t0 = _context2["catch"](0);
+            console.log(_context2.t0);
+          case 10:
           case "end":
             return _context2.stop();
         }
-      }, _callee2, null, [[0, 5], [9, 14]]);
+      }, _callee2, null, [[0, 7]]);
     }));
     return function startNewGame() {
       return _ref2.apply(this, arguments);
@@ -4726,7 +4777,7 @@ var Home = function Home() {
     };
   }();
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
-    "class": "textAndButton"
+    className: "textAndButton"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("h1", null, "Mastermind"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", {
     onClick: onLetsBeginClicked
   }, "Let's Begin"));

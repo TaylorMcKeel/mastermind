@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-// Fix game[0]
-
+//put functions in chronological order
 
 const Game = () => {
   const [game, setGame] = useState({});
   const [guess, setGuess] = useState([]);
   const [gameOverCount, setGameOverCount] = useState(0);
   const [error, setError] = useState("");
+  const navigate = useNavigate()
 
   const count = game[0] ? 10 - game[0]["plays"] : 10;
 
@@ -17,12 +17,10 @@ const Game = () => {
   useEffect(() => {
     const getInitialGame = async () => {
       try {
-        await axios.get("/api/games").then((res) => {
-          console.log(res.data[0]);
-          setGame(res.data);
-          if (count === 0) {
-            setGameOverCount(1);
-          }
+        await axios.get("/api/games")
+          .then((res) => {
+            console.log(res.data[0]);
+            setGame(res.data);
         });
       } catch (error) {
         console.log(error)
@@ -30,6 +28,23 @@ const Game = () => {
     };
     getInitialGame();
   }, []);
+
+  //makes sure user can only choose 4 numbers between 0-7
+  const handleGuessChange = (ev) => {
+    const newGuess = ev.target.value;
+    if (newGuess.length > 4 || isNaN(newGuess) ) {
+      setError('Guess must be 4 numbers')
+      return;
+    }
+    for(let i=0;i<newGuess.length;i++){
+      if(newGuess[i] > 7){
+        setError('Number must be between 0-7')
+        return
+      }
+    }
+
+    setGuess(newGuess.split(""));
+  };
 
   //checks users answer, and if they are out of turns
   const checkAnswer = async () => {
@@ -42,7 +57,6 @@ const Game = () => {
         await axios.put(`/api/games/${updatedGame._id}`, updatedGame);
       } catch(err) {
         console.log(err)
-        setError("App Error - Please try again.");
       }
       if (guess.join("") === updatedGame['numbers'].join("")) {
         setGameOverCount(2);
@@ -57,19 +71,24 @@ const Game = () => {
     }
   };
 
-  //makes sure user can only choose 4 numbers between 0-7
-  const handleGuessChange = (ev) => {
-    const newGuess = ev.target.value;
-    if (newGuess.length > 4 || isNaN(newGuess) ) {
-      return;
-    }
-    for(let i=0;i<newGuess.length;i++){
-      if(newGuess[i] > 7){
-        return
-      }
-    }
-
-    setGuess(newGuess.split(""));
+//displays previous guesses made by user
+  const displayPreviousGuesses = () => {
+    const prevPlays = game[0]["prevPlays"];
+    return prevPlays.toReversed().map((play) => {
+      const checkNums = countNumbers(game[0]);
+      const { numbersRight, placesRight } = calculateScores(
+        play,
+        game[0],
+        checkNums
+      );
+      return (
+        <div className='play' key={play.join("")}>
+          <p className='playDetail'>{play}</p>
+          <p className='playDetail'>Numbers Correct: {numbersRight}</p>
+          <p className='playDetail'>Places Correct: {placesRight}</p>
+        </div>
+      );
+    });
   };
 
   //creates a hashmap of the winning numbers
@@ -84,7 +103,7 @@ const Game = () => {
     }, {});
   };
 
-  // Function to numbers right and places correct
+  // Function to calculate numbers right and places correct
   const calculateScores = (play, game, checkNums) => {
     let numbersRight = 0;
     let placesRight = 0;
@@ -100,39 +119,38 @@ const Game = () => {
     return { numbersRight, placesRight };
   };
 
-//generates previous plays
-  const previousGames = () => {
-    const prevPlays = game[0]["prevPlays"];
-    return prevPlays.toReversed().map((play) => {
-      const checkNums = countNumbers(game[0]);
-      const { numbersRight, placesRight } = calculateScores(
-        play,
-        game[0],
-        checkNums
-      );
-      return (
-        <div class='play' key={play.join("")}>
-          <p class='playDetail'>{play}</p>
-          <p class='playDetail'>Numbers Correct: {numbersRight}</p>
-          <p class='playDetail'>Places Correct: {placesRight}</p>
-        </div>
-      );
-    });
-  };
+  //deletes current game once game is over.
+  const deleteCurrentGame = async()=>{
+    try {
+      await axios
+        .delete("/api/games")
+        .then((res) => console.log(`${res} was deleted from the database`));
+    } catch (err) {
+      console.log(err)
+    }
+  }
 
+  //takes user back to the home page to start another game
+  const navigateHome =async()=>{
+    try {
+      await deleteCurrentGame()
+    } catch (err) {
+      console.log(err)
+    }
+    navigate('/')
+  }
   return (
     <>
-      {error}
       {gameOverCount === 1 && (
-        <div class='textAndButton'>
+        <div className='textAndButton'>
           <h1>Game Over</h1>
-          <Link to="/">Play Again</Link>
+          <button onClick={navigateHome}>Play Again</button>
         </div>
       )}
       {gameOverCount === 2 && (
-        <div class="animated-background">
+        <div className="animated-background">
           <h1>YOU WIN</h1>
-          <Link to="/">Play Again</Link>
+          <button onClick={navigateHome}>Play Again</button>
         </div>
       )}
       {gameOverCount === 0 && game[0] && (
@@ -146,6 +164,7 @@ const Game = () => {
               name="guess"
               onChange={handleGuessChange}
             />
+            <p id='error'>{error}</p>
             <button
               type="button"
               onClick={(event) => {
@@ -157,7 +176,7 @@ const Game = () => {
             </button>
           </form>
 
-          <ul id='prevPlays'>{previousGames()}</ul>
+          <ul id='prevPlays'>{displayPreviousGuesses()}</ul>
         </div>
       )}
     </>
