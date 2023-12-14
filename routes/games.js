@@ -17,5 +17,8 @@ router.route('/')
 router.route('/:gameId')
   .put(updateGame)
 
+  
+//To-do: add get game route /:gameId
+
 
 module.exports = router

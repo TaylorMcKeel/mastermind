@@ -1,6 +1,17 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
+//To-do: update game model
+// Game={
+//   id
+//   correctNumbers: number[]
+//   Users: number[] //
+  
+  
+//    user ids
+//   ... the other fields on the Game model ...
+// }
+
 const GameSchema = new Schema({
   numbers:{
     type: Array,

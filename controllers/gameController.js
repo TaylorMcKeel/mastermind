@@ -1,6 +1,6 @@
 const Game = require('../models/Game')
 
-
+//To-do: game controller- getGame- based on id
 const getGame = async(req,res,next)=>{
   try {
     const result = await Game.find({})

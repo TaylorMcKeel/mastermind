@@ -2,6 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+
+
+//To-Do:  add functionalility to calculate winner
+  // Get user data
+  // calculate winner
+  // Navigate each user to the appropirate conmponent
 //put functions in chronological order
 
 const Game = () => {
@@ -54,6 +60,7 @@ const Game = () => {
       updatedGame.plays++;
       try {
         await axios.put(`/api/games/${updatedGame._id}`, updatedGame);
+   // To-Do: What do we do if there is an error for the user
       } catch(err) {
         console.log(err)
       }
@@ -74,11 +81,11 @@ const Game = () => {
   const displayPreviousGuesses = () => {
     const prevPlays = game[0]["prevPlays"];
     return prevPlays.toReversed().map((play) => {
-      const checkNums = countNumbers(game[0]);
+      const hashMap = createHashmap(game[0]);
       const { numbersRight, placesRight } = calculateScores(
         play,
         game[0],
-        checkNums
+        hashMap
       );
       return (
         <div className='play' key={play.join("")}>
@@ -91,7 +98,7 @@ const Game = () => {
   };
 
   //creates a hashmap of the winning numbers
-  const countNumbers = (game) => {
+  const createHashmap = (game) => {
     return game["numbers"].reduce((acc, curr) => {
       if (acc[curr]) {
         acc[curr]++;
@@ -103,16 +110,16 @@ const Game = () => {
   };
 
   // Function to calculate numbers right and places correct
-  const calculateScores = (play, game, checkNums) => {
+  const calculateScores = (play, game, hashMap) => {
     let numbersRight = 0;
     let placesRight = 0;
     for (let i = 0; i < play.length; i++) {
-      if (checkNums[play[i]] && checkNums[play[i]] > 0) {
+      if (hashMap[play[i]] && hashMap[play[i]] > 0) {
         numbersRight++;
-        checkNums[play[i]]--;
-        if (play[i] === game["numbers"][i]) {
-          placesRight++;
-        }
+        hashMap[play[i]]--;
+      }
+      if (play[i] === game["numbers"][i]) {
+        placesRight++;
       }
     }
     return { numbersRight, placesRight };

@@ -2,6 +2,21 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+
+//To-do: Create button for multiplayer
+// starting the game
+
+  // One user starts
+  //   create user
+  //   Creates the game
+  //   Get game ID
+
+  // Second user joins by searching for game
+  //    create user
+  //    get game
+  //    add user to game useer array
+
+
 const Home = () => {
   const navigate = useNavigate();
   const [difficultyLevel, setDifficultyLevel] = useState(4)

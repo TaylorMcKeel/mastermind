@@ -39,3 +39,12 @@ process.on('unhandledRejection', (err, promise)=>{
 })
 
 module.exports = app
+
+/*
+- 2 players
+- Same game
+- Playing indepently
+- Compare number of attempts it takes ot determine the winner
+- Comparin
+- 10 attempts per player
+*/
